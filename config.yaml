@@ -1,0 +1,34 @@
+name: KitchenOwl
+version: "1.0.0"
+slug: kitchenowl
+description: Self-hosted grocery list and recipe manager
+url: https://github.com/TomBursch/kitchenowl
+arch:
+  - aarch64
+  - amd64
+  - armv7
+init: false
+startup: services
+boot: auto
+
+# Port mappings
+ports:
+  8080/tcp: 8080
+
+# Port descriptions for UI
+ports_description:
+  8080/tcp: Web interface
+
+# User-configurable options
+options:
+  jwt_secret: ""
+
+# Schema for validating options
+schema:
+  jwt_secret: password
+
+# Image configuration
+image: ghcr.io/{arch}-kitchenowl
+
+# Web UI
+webui: http://[HOST]:8080
