@@ -27,8 +27,5 @@ options:
 schema:
   jwt_secret: password
 
-# Image configuration
-image: ghcr.io/{arch}-kitchenowl
-
 # Web UI
 webui: http://[HOST]:8080
