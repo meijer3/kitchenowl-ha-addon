@@ -11,62 +11,21 @@ if [ -z "$JWT_SECRET" ]; then
     exit 1
 fi
 
-# Export environment variables for backend
+# Export environment variables for KitchenOwl
 export JWT_SECRET_KEY="$JWT_SECRET"
-export DATA_DIR="/data"
+export STORAGE_PATH="/data"
+export DEBUG="False"
 
-bashio::log.info "Starting KitchenOwl backend..."
+bashio::log.info "Starting KitchenOwl on port ${PORT}..."
+bashio::log.info "Data directory: /data"
 
-# Start backend in background
-cd /app/backend
-python3 -m flask run --host=0.0.0.0 --port=5000 &
-BACKEND_PID=$!
+# KitchenOwl's official image uses uWSGI which listens on port 5000
+# We need to expose it on the configured port
+# The official entrypoint is /usr/src/kitchenowl/entrypoint.sh
+cd /usr/src/kitchenowl
 
-bashio::log.info "Backend started with PID $BACKEND_PID"
+# Modify the uWSGI config to use the configured port
+sed -i "s/http-socket = :5000/http-socket = :${PORT}/" wsgi.ini
 
-# Wait for backend to be ready
-sleep 3
-
-bashio::log.info "Configuring nginx to listen on port ${PORT}..."
-
-# Generate nginx config with configured port
-cat > /etc/nginx/http.d/default.conf <<EOF
-server {
-    listen ${PORT};
-    server_name _;
-
-    # Frontend static files
-    location / {
-        root /app/frontend;
-        try_files \$uri \$uri/ /index.html;
-    }
-
-    # Backend API proxy
-    location /api/ {
-        proxy_pass http://127.0.0.1:5000;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade \$http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host \$host;
-        proxy_cache_bypass \$http_upgrade;
-        proxy_set_header X-Real-IP \$remote_addr;
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto \$scheme;
-    }
-}
-EOF
-
-bashio::log.info "Starting nginx web server..."
-
-# Start nginx in foreground
-nginx -g 'daemon off;' &
-NGINX_PID=$!
-
-bashio::log.info "Nginx started with PID $NGINX_PID"
-bashio::log.info "KitchenOwl is running on port ${PORT}"
-
-# Wait for any process to exit
-wait -n
-
-# Exit with status of process that exited first
-exit $?
+# Run the official entrypoint
+exec ./entrypoint.sh

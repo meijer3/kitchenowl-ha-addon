@@ -1,37 +1,23 @@
-ARG BUILD_FROM
-FROM $BUILD_FROM
+FROM tombursch/kitchenowl:latest
 
-# Set shell
-SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+# Install Home Assistant add-on dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    jq \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install base dependencies
-RUN apk add --no-cache \
-    nginx \
-    python3 \
-    py3-pip \
-    py3-flask \
-    py3-flask-cors \
-    py3-sqlalchemy \
-    py3-bcrypt \
-    py3-jwt \
-    curl
+# Install bashio for Home Assistant add-on configuration support
+RUN curl -J -L -o /tmp/bashio.tar.gz \
+    "https://github.com/hassio-addons/bashio/archive/v0.16.2.tar.gz" \
+    && mkdir /tmp/bashio \
+    && tar zxvf /tmp/bashio.tar.gz --strip 1 -C /tmp/bashio \
+    && mv /tmp/bashio/lib /usr/lib/bashio \
+    && ln -s /usr/lib/bashio/bashio /usr/bin/bashio \
+    && rm -rf /tmp/bashio /tmp/bashio.tar.gz
 
-# Create app directories
-RUN mkdir -p /app/backend /app/frontend /data
-
-# Download and setup KitchenOwl backend
-WORKDIR /app/backend
-RUN curl -L https://github.com/TomBursch/kitchenowl/archive/refs/heads/main.tar.gz | tar xz --strip-components=2 kitchenowl-main/backend
-RUN pip3 install --no-cache-dir --break-system-packages .
-
-# Download and setup KitchenOwl frontend
-WORKDIR /app/frontend
-RUN curl -L https://github.com/TomBursch/kitchenowl/archive/refs/heads/main.tar.gz | tar xz --strip-components=2 kitchenowl-main/kitchenowl_web && \
-    if [ -d "build" ]; then mv build/* . && rm -rf build; fi
-
-# Copy run script (nginx config will be generated at runtime)
+# Copy custom run script that reads Home Assistant configuration
 COPY run.sh /
 RUN chmod a+x /run.sh
 
-WORKDIR /app
+WORKDIR /usr/src/kitchenowl
 CMD ["/run.sh"]

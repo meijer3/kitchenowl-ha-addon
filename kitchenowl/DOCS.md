@@ -31,13 +31,13 @@ openssl rand -base64 32
 
 ### port (optional)
 
-The port on which KitchenOwl will be accessible. Default: `8080`
+The port on which KitchenOwl will be accessible. Default: `5000`
 
 **Example configuration:**
 
 ```yaml
 jwt_secret: "paste-your-generated-secret-here"
-port: 8080
+port: 5000
 ```
 
 ## First Run
