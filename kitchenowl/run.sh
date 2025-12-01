@@ -2,6 +2,7 @@
 
 # Get configuration from options
 JWT_SECRET=$(bashio::config 'jwt_secret')
+PORT=$(bashio::config 'port')
 
 # Validate required options
 if [ -z "$JWT_SECRET" ]; then
@@ -26,6 +27,35 @@ bashio::log.info "Backend started with PID $BACKEND_PID"
 # Wait for backend to be ready
 sleep 3
 
+bashio::log.info "Configuring nginx to listen on port ${PORT}..."
+
+# Generate nginx config with configured port
+cat > /etc/nginx/http.d/default.conf <<EOF
+server {
+    listen ${PORT};
+    server_name _;
+
+    # Frontend static files
+    location / {
+        root /app/frontend;
+        try_files \$uri \$uri/ /index.html;
+    }
+
+    # Backend API proxy
+    location /api/ {
+        proxy_pass http://127.0.0.1:5000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host \$host;
+        proxy_cache_bypass \$http_upgrade;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+    }
+}
+EOF
+
 bashio::log.info "Starting nginx web server..."
 
 # Start nginx in foreground
@@ -33,7 +63,7 @@ nginx -g 'daemon off;' &
 NGINX_PID=$!
 
 bashio::log.info "Nginx started with PID $NGINX_PID"
-bashio::log.info "KitchenOwl is running on port 8080"
+bashio::log.info "KitchenOwl is running on port ${PORT}"
 
 # Wait for any process to exit
 wait -n

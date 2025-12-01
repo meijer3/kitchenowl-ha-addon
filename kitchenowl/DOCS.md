@@ -29,10 +29,15 @@ This is a secure random string used for authentication tokens. You must generate
 openssl rand -base64 32
 ```
 
-**Add to configuration:**
+### port (optional)
+
+The port on which KitchenOwl will be accessible. Default: `8080`
+
+**Example configuration:**
 
 ```yaml
 jwt_secret: "paste-your-generated-secret-here"
+port: 8080
 ```
 
 ## First Run
@@ -52,7 +57,7 @@ All data is stored in `/data` and persists across add-on restarts and updates. T
 ## Accessing the Web Interface
 
 - Click "Open Web UI" in the add-on info page
-- Or visit: `http://homeassistant.local:8080`
+- Or visit: `http://homeassistant.local:PORT` (replace PORT with your configured port, default 8080)
 
 ## Troubleshooting
 
@@ -60,13 +65,13 @@ All data is stored in `/data` and persists across add-on restarts and updates. T
 
 Check the logs for errors. Common issues:
 - JWT secret not configured
-- Port 8080 already in use
+- Port already in use (try changing the port in configuration)
 
 ### Can't access web interface
 
 - Verify the add-on is running
-- Check if port 8080 is accessible
-- Try accessing via `http://[your-ha-ip]:8080`
+- Check if the configured port is accessible
+- Try accessing via `http://[your-ha-ip]:[PORT]`
 
 ### Data not persisting
 
