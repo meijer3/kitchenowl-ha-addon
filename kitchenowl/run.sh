@@ -1,4 +1,10 @@
-#!/usr/bin/with-contenv bashio
+#!/usr/bin/env bashio
+
+# Check if bashio is available
+if ! command -v bashio &> /dev/null; then
+    echo "ERROR: bashio not found. This script must run in a Home Assistant add-on environment."
+    exit 1
+fi
 
 # Get configuration from options
 JWT_SECRET=$(bashio::config 'jwt_secret')
