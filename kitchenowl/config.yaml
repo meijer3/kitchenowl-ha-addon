@@ -16,4 +16,4 @@ options:
   jwt_secret: ""
 schema:
   jwt_secret: password
-webui: http://[HOST]:8080
+webui: "http://[HOST]:[PORT:8080]"
