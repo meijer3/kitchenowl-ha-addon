@@ -20,4 +20,4 @@ COPY run.sh /
 RUN chmod a+x /run.sh
 
 WORKDIR /usr/src/kitchenowl
-CMD ["/run.sh"]
+ENTRYPOINT ["/run.sh"]
