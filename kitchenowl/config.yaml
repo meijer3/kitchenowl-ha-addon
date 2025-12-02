@@ -1,5 +1,5 @@
 name: KitchenOwl
-version: "2.0.4"
+version: "2.0.5"
 slug: kitchenowl
 description: Self-hosted grocery list and recipe manager
 url: https://github.com/meijer3/kitchenowl-ha-addon
@@ -14,8 +14,6 @@ ports_description:
   8080/tcp: Web interface
 options:
   jwt_secret: ""
-  port: 8080
 schema:
   jwt_secret: password
-  port: port
 webui: "http://[HOST]:[PORT:8080]"
