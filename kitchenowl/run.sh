@@ -21,14 +21,9 @@ export JWT_SECRET_KEY="$JWT_SECRET"
 export STORAGE_PATH="/data"
 export DEBUG="False"
 
-# Configure base path for Home Assistant ingress
-# Home Assistant ingress uses /api/hassio_ingress/<token>/ as the base path
-INGRESS_ENTRY=$(bashio::addon.ingress_entry)
-export BASE_HREF="${INGRESS_ENTRY}/"
-
 bashio::log.info "Starting KitchenOwl..."
 bashio::log.info "Data directory: /data"
-bashio::log.info "Ingress path: ${INGRESS_ENTRY}"
+bashio::log.info "Access KitchenOwl via port 8080"
 
 # Run the official KitchenOwl entrypoint with default uWSGI arguments
 # The official image uses HTTP on port 8080

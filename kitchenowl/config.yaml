@@ -1,5 +1,5 @@
 name: KitchenOwl
-version: "2.1.0"
+version: "2.1.1"
 slug: kitchenowl
 description: Self-hosted grocery list and recipe manager
 url: https://github.com/meijer3/kitchenowl-ha-addon
@@ -8,14 +8,13 @@ arch:
   - amd64
   - armv7
 startup: services
-ingress: true
-ingress_port: 8080
 panel_icon: mdi:food
 ports:
-  8080/tcp: null
+  8080/tcp: 8080
 ports_description:
-  8080/tcp: Web interface (not needed with Ingress)
+  8080/tcp: Web interface
 options:
   jwt_secret: ""
 schema:
   jwt_secret: password
+webui: "http://[HOST]:[PORT:8080]"
