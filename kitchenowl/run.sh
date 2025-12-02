@@ -25,13 +25,13 @@ export DEBUG="False"
 bashio::log.info "Starting KitchenOwl on port ${PORT}..."
 bashio::log.info "Data directory: /data"
 
-# KitchenOwl's official image uses uWSGI which listens on port 5000
+# KitchenOwl's official image uses uWSGI with HTTP on port 8080
 # We need to expose it on the configured port
 # The official entrypoint is /usr/src/kitchenowl/entrypoint.sh
 cd /usr/src/kitchenowl
 
-# Modify the uWSGI config to use the configured port
-sed -i "s/http-socket = :5000/http-socket = :${PORT}/" wsgi.ini
+# Modify the uWSGI config to use the configured HTTP port
+sed -i "s/http = :8080/http = :${PORT}/" wsgi.ini
 
 # Run the official entrypoint with the default uWSGI arguments
 exec ./entrypoint.sh --ini wsgi.ini:web --gevent 200 --max-fd 1048576
