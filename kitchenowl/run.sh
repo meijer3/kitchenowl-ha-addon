@@ -33,5 +33,5 @@ cd /usr/src/kitchenowl
 # Modify the uWSGI config to use the configured port
 sed -i "s/http-socket = :5000/http-socket = :${PORT}/" wsgi.ini
 
-# Run the official entrypoint
-exec ./entrypoint.sh
+# Run the official entrypoint with the default uWSGI arguments
+exec ./entrypoint.sh --ini wsgi.ini:web --gevent 200 --max-fd 1048576
