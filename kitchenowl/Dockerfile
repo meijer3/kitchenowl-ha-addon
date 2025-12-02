@@ -15,9 +15,10 @@ RUN curl -J -L -o /tmp/bashio.tar.gz \
     && ln -s /usr/lib/bashio/bashio /usr/bin/bashio \
     && rm -rf /tmp/bashio /tmp/bashio.tar.gz
 
-# Copy custom run script that reads Home Assistant configuration
+# Copy custom scripts for Home Assistant
 COPY run.sh /
-RUN chmod a+x /run.sh
+COPY patch-ingress.sh /
+RUN chmod a+x /run.sh /patch-ingress.sh
 
 WORKDIR /usr/src/kitchenowl
 ENTRYPOINT ["/run.sh"]
